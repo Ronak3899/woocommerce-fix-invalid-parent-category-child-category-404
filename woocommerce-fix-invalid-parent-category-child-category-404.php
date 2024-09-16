@@ -38,13 +38,19 @@ function custom_woocommerce_category_404() {
 }
 
 /**
- * Helper function to extract the parent category from the URL.
- * This works by splitting the URL path and retrieving the second-to-last part.
+ * Helper function to extract the parent category from the URL, ignoring pagination.
+ * This works by splitting the URL path and retrieving the second-to-last part before 'page'.
  */
 function get_parent_category_from_url() {
     global $wp;
     $url_path = $wp->request; // Get the current request URL path
     $parts = explode('/', $url_path);
+
+    // Remove pagination part (e.g., 'page/2') if it exists
+    $pagination_index = array_search('page', $parts);
+    if ($pagination_index !== false) {
+        $parts = array_slice($parts, 0, $pagination_index);
+    }
 
     // Return the second last part of the URL (which should be the parent category slug)
     return (count($parts) > 2) ? $parts[count($parts) - 2] : null;
